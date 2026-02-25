@@ -13,11 +13,15 @@ parser = JsonOutputToolsParser(return_id=True)
 pydantic_parser = PydanticToolsParser(tools=[RespondToQuestion])
 
 actor_prompt = ChatPromptTemplate.from_messages([(
-    "system", """You are expert researcher. 
+    "system", 
+    """You are expert researcher. 
     Current time: {time}
     1. {first_instruction}
     2. Reflect and critique your answer. Be severe to maximize improvment.
-    3. Recommend search queries to research information and improve your answer.""")]).partial(
+    3. Recommend search queries to research information and improve your answer.""", ), 
+    MessagesPlaceholder(variable_name="messages"),
+    ("system", "Answer the user's question above using the required format"),]
+    ).partial(
         time=lambda: datetime.datetime.now().isoformat())
 
 first_responder_prompt = actor_prompt.partial(first_instruction="Provide a detailed ~250 word answer")
